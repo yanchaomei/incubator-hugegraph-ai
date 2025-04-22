@@ -44,9 +44,7 @@ class HGraphConfig:
 
         else:
             try:
-                response = requests.get(
-                    f"http://{self.ip}:{self.port}/versions", timeout=0.5
-                )
+                response = requests.get(f"http://{self.ip}:{self.port}/versions", timeout=0.5)
                 core = response.json()["versions"]["core"]
                 log.info(  # pylint: disable=logging-fstring-interpolation
                     f"Retrieved API version information from the server: {core}."
@@ -59,15 +57,15 @@ class HGraphConfig:
                 if major >= 3:
                     self.graphspace = "DEFAULT"
                     self.gs_supported = True
-                    log.warning(
-                        "graph space is not set, default value 'DEFAULT' will be used."
-                    )
+                    log.warning("graph space is not set, default value 'DEFAULT' will be used.")
 
             except Exception as e:  # pylint: disable=broad-exception-caught
                 try:
                     traceback.print_exception(e)
                     self.gs_supported = False
-                except Exception:   # pylint: disable=broad-exception-caught
+                except Exception:  # pylint: disable=broad-exception-caught
                     exc_type, exc_value, tb = sys.exc_info()
                     traceback.print_exception(exc_type, exc_value, tb)
-                    log.warning("Failed to retrieve API version information from the server, reverting to default v1.")
+                    log.warning(
+                        "Failed to retrieve API version information from the server, reverting to default v1."
+                    )

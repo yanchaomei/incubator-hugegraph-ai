@@ -29,7 +29,12 @@ class ClientUtils:
 
     def __init__(self):
         self.client = PyHugeClient(
-            self.IP, self.PORT, user=self.USERNAME, pwd=self.PASSWORD, graph=self.GRAPH, graphspace=self.GRAPHSPACE
+            self.IP,
+            self.PORT,
+            user=self.USERNAME,
+            pwd=self.PASSWORD,
+            graph=self.GRAPH,
+            graphspace=self.GRAPHSPACE,
         )
         assert self.client is not None
 

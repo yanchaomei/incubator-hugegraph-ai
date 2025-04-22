@@ -49,12 +49,12 @@ class PyHugeClient:
     def __init__(
         self,
         ip: str,
-        port: str, # TODO: port should be int?
+        port: str,  # TODO: port should be int?
         graph: str,
         user: str,
         pwd: str,
         graphspace: Optional[str] = None,
-        timeout: Optional[tuple[float, float]] = None
+        timeout: Optional[tuple[float, float]] = None,
     ):
         self.cfg = HGraphConfig(ip, port, user, pwd, graph, graphspace, timeout or (0.5, 15.0))
 
