@@ -54,7 +54,9 @@ def init_hg_test_data():
     schema = client.schema()
     schema.propertyKey("name").asText().ifNotExist().create()
     schema.propertyKey("birthDate").asText().ifNotExist().create()
-    schema.vertexLabel("Person").properties("name", "birthDate").useCustomizeStringId().ifNotExist().create()
+    schema.vertexLabel("Person").properties(
+        "name", "birthDate"
+    ).useCustomizeStringId().ifNotExist().create()
     schema.vertexLabel("Movie").properties("name").useCustomizeStringId().ifNotExist().create()
     schema.edgeLabel("ActedIn").sourceLabel("Person").targetLabel("Movie").ifNotExist().create()
 
@@ -111,13 +113,13 @@ def backup_data():
 
         files = {
             "vertices.json": f"g.V().limit({MAX_VERTICES})"
-                             f".aggregate('vertices').count().as('count').select('count','vertices')",
+            f".aggregate('vertices').count().as('count').select('count','vertices')",
             "edges.json": f"g.E().limit({MAX_EDGES}).aggregate('edges').count().as('count').select('count','edges')",
-            "schema.json": client.schema().getSchema(_format="groovy")
+            "schema.json": client.schema().getSchema(_format="groovy"),
         }
 
         vertexlabels = client.schema().getSchema()["vertexlabels"]
-        all_pk_flag = all(data.get('id_strategy') == 'PRIMARY_KEY' for data in vertexlabels)
+        all_pk_flag = all(data.get("id_strategy") == "PRIMARY_KEY" for data in vertexlabels)
 
         for filename, query in files.items():
             write_backup_file(client, backup_subdir, filename, query, all_pk_flag)
@@ -138,14 +140,22 @@ def write_backup_file(client, backup_subdir, filename, query, all_pk_flag):
             json.dump(data, f, ensure_ascii=False)
         elif filename == "vertices.json":
             data_full = client.gremlin().exec(query)["data"][0]["vertices"]
-            data = [{key: value for key, value in vertex.items() if key != "id"}
-                    for vertex in data_full] if all_pk_flag else data_full
+            data = (
+                [
+                    {key: value for key, value in vertex.items() if key != "id"}
+                    for vertex in data_full
+                ]
+                if all_pk_flag
+                else data_full
+            )
             json.dump(data, f, ensure_ascii=False)
         elif filename == "schema.json":
             data_full = query
             if isinstance(data_full, dict) and "schema" in data_full:
                 groovy_filename = filename.replace(".json", ".groovy")
-                with open(os.path.join(backup_subdir, groovy_filename), "w", encoding="utf-8") as groovy_file:
+                with open(
+                    os.path.join(backup_subdir, groovy_filename), "w", encoding="utf-8"
+                ) as groovy_file:
                     groovy_file.write(str(data_full["schema"]))
             else:
                 data = data_full
@@ -172,10 +182,12 @@ def manage_backup_retention():
         raise Exception("Failed to manage backup retention") from e
 
 
-#TODO: In the path demo/rag_demo/configs_block.py,
+# TODO: In the path demo/rag_demo/configs_block.py,
 # there is a function test_api_connection that is similar to this function,
 # but it is not straightforward to reuse
-def check_graph_db_connection(ip: str, port: str, name: str, user: str, pwd: str, graph_space: str) -> bool:
+def check_graph_db_connection(
+    ip: str, port: str, name: str, user: str, pwd: str, graph_space: str
+) -> bool:
     try:
         if graph_space and graph_space.strip():
             test_url = f"http://{ip}:{port}/graphspaces/{graph_space}/graphs/{name}/schema"

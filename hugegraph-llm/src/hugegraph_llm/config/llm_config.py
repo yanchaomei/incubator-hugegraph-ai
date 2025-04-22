@@ -28,26 +28,38 @@ class LLMConfig(BaseConfig):
     chat_llm_type: Literal["openai", "litellm", "ollama/local", "qianfan_wenxin"] = "openai"
     extract_llm_type: Literal["openai", "litellm", "ollama/local", "qianfan_wenxin"] = "openai"
     text2gql_llm_type: Literal["openai", "litellm", "ollama/local", "qianfan_wenxin"] = "openai"
-    embedding_type: Optional[Literal["openai", "litellm", "ollama/local", "qianfan_wenxin"]] = "openai"
+    embedding_type: Optional[Literal["openai", "litellm", "ollama/local", "qianfan_wenxin"]] = (
+        "openai"
+    )
     reranker_type: Optional[Literal["cohere", "siliconflow"]] = None
     # 1. OpenAI settings
-    openai_chat_api_base: Optional[str] = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    openai_chat_api_base: Optional[str] = os.environ.get(
+        "OPENAI_BASE_URL", "https://api.openai.com/v1"
+    )
     openai_chat_api_key: Optional[str] = os.environ.get("OPENAI_API_KEY")
     openai_chat_language_model: Optional[str] = "gpt-4o-mini"
-    openai_extract_api_base: Optional[str] = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    openai_extract_api_base: Optional[str] = os.environ.get(
+        "OPENAI_BASE_URL", "https://api.openai.com/v1"
+    )
     openai_extract_api_key: Optional[str] = os.environ.get("OPENAI_API_KEY")
     openai_extract_language_model: Optional[str] = "gpt-4o-mini"
-    openai_text2gql_api_base: Optional[str] = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    openai_text2gql_api_base: Optional[str] = os.environ.get(
+        "OPENAI_BASE_URL", "https://api.openai.com/v1"
+    )
     openai_text2gql_api_key: Optional[str] = os.environ.get("OPENAI_API_KEY")
     openai_text2gql_language_model: Optional[str] = "gpt-4o-mini"
-    openai_embedding_api_base: Optional[str] = os.environ.get("OPENAI_EMBEDDING_BASE_URL", "https://api.openai.com/v1")
+    openai_embedding_api_base: Optional[str] = os.environ.get(
+        "OPENAI_EMBEDDING_BASE_URL", "https://api.openai.com/v1"
+    )
     openai_embedding_api_key: Optional[str] = os.environ.get("OPENAI_EMBEDDING_API_KEY")
     openai_embedding_model: Optional[str] = "text-embedding-3-small"
     openai_chat_tokens: int = 8192
     openai_extract_tokens: int = 256
     openai_text2gql_tokens: int = 4096
     # 2. Rerank settings
-    cohere_base_url: Optional[str] = os.environ.get("CO_API_URL", "https://api.cohere.com/v1/rerank")
+    cohere_base_url: Optional[str] = os.environ.get(
+        "CO_API_URL", "https://api.cohere.com/v1/rerank"
+    )
     reranker_api_key: Optional[str] = None
     reranker_model: Optional[str] = None
     # 3. Ollama settings
@@ -76,7 +88,9 @@ class LLMConfig(BaseConfig):
     qianfan_embedding_api_key: Optional[str] = None
     qianfan_embedding_secret_key: Optional[str] = None
     # 4.1 URL settings
-    qianfan_url_prefix: Optional[str] = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop"
+    qianfan_url_prefix: Optional[str] = (
+        "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop"
+    )
     qianfan_chat_url: Optional[str] = qianfan_url_prefix + "/chat/"
     qianfan_chat_language_model: Optional[str] = "ERNIE-Speed-128K"
     qianfan_extract_language_model: Optional[str] = "ERNIE-Speed-128K"

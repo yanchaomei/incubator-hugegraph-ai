@@ -101,7 +101,9 @@ class TestChunkSplit(unittest.TestCase):
     def test_run_sentence_split(self):
         """Test running sentence split."""
         # Use a text with more distinct sentences to ensure splitting
-        text_with_sentences = "This is the first sentence. This is the second sentence. This is the third sentence."
+        text_with_sentences = (
+            "This is the first sentence. This is the second sentence. This is the third sentence."
+        )
         chunk_split = ChunkSplit(text_with_sentences, split_type="sentence")
         result = chunk_split.run(None)
         # Verify that chunks are created
@@ -130,4 +132,4 @@ class TestChunkSplit(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

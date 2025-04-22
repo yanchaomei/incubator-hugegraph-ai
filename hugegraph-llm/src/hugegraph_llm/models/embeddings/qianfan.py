@@ -33,10 +33,10 @@ It enables the invocation and switching between WenXin and these open-source mod
 
 class QianFanEmbedding:
     def __init__(
-            self,
-            model_name: str = "embedding-v1",
-            api_key: Optional[str] = None,
-            secret_key: Optional[str] = None
+        self,
+        model_name: str = "embedding-v1",
+        api_key: Optional[str] = None,
+        secret_key: Optional[str] = None,
     ):
         qianfan.get_config().AK = api_key or llm_settings.qianfan_embedding_api_key
         qianfan.get_config().SK = secret_key or llm_settings.qianfan_embedding_secret_key
@@ -44,17 +44,11 @@ class QianFanEmbedding:
         self.client = qianfan.Embedding()
 
     def get_text_embedding(self, text: str) -> List[float]:
-        """ Usage refer: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlmokk9qn"""
-        response = self.client.do(
-            model=self.embedding_model_name,
-            texts=[text]
-        )
+        """Usage refer: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlmokk9qn"""
+        response = self.client.do(model=self.embedding_model_name, texts=[text])
         return response["body"]["data"][0]["embedding"]
 
     async def async_get_text_embedding(self, text: str) -> List[float]:
-        """ Usage refer: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlmokk9qn"""
-        response = await self.client.ado(
-            model=self.embedding_model_name,
-            texts=[text]
-        )
+        """Usage refer: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlmokk9qn"""
+        response = await self.client.ado(model=self.embedding_model_name, texts=[text])
         return response["body"]["data"][0]["embedding"]

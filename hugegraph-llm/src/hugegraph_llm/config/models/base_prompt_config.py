@@ -27,15 +27,15 @@ yaml_file_path = os.path.join(package_path, f"src/hugegraph_llm/resources/demo/{
 
 
 class BasePromptConfig:
-    graph_schema: str = ''
-    extract_graph_prompt: str = ''
-    default_question: str = ''
-    custom_rerank_info: str = ''
-    answer_prompt: str = ''
-    keywords_extract_prompt: str = ''
-    text2gql_graph_schema: str = ''
-    gremlin_generate_prompt: str = ''
-    doc_input_text: str = ''
+    graph_schema: str = ""
+    extract_graph_prompt: str = ""
+    default_question: str = ""
+    custom_rerank_info: str = ""
+    answer_prompt: str = ""
+    keywords_extract_prompt: str = ""
+    text2gql_graph_schema: str = ""
+    gremlin_generate_prompt: str = ""
+    doc_input_text: str = ""
 
     def ensure_yaml_file_exists(self):
         if os.path.exists(yaml_file_path):
@@ -51,18 +51,30 @@ class BasePromptConfig:
 
     def save_to_yaml(self):
         indented_schema = "\n".join([f"  {line}" for line in self.graph_schema.splitlines()])
-        indented_text2gql_schema = "\n".join([f"  {line}" for line in self.text2gql_graph_schema.splitlines()])
-        indented_gremlin_prompt = "\n".join([f"  {line}" for line in self.gremlin_generate_prompt.splitlines()])
-        indented_example_prompt = "\n".join([f"    {line}" for line in self.extract_graph_prompt.splitlines()])
-        indented_question = "\n".join([f"    {line}" for line in self.default_question.splitlines()])
-        indented_custom_related_information = (
-            "\n".join([f"    {line}" for line in self.custom_rerank_info.splitlines()])
+        indented_text2gql_schema = "\n".join(
+            [f"  {line}" for line in self.text2gql_graph_schema.splitlines()]
         )
-        indented_default_answer_template = "\n".join([f"    {line}" for line in self.answer_prompt.splitlines()])
-        indented_keywords_extract_template = (
-            "\n".join([f"    {line}" for line in self.keywords_extract_prompt.splitlines()])
+        indented_gremlin_prompt = "\n".join(
+            [f"  {line}" for line in self.gremlin_generate_prompt.splitlines()]
         )
-        indented_doc_input_text = "\n".join([f"  {line}" for line in self.doc_input_text.splitlines()])
+        indented_example_prompt = "\n".join(
+            [f"    {line}" for line in self.extract_graph_prompt.splitlines()]
+        )
+        indented_question = "\n".join(
+            [f"    {line}" for line in self.default_question.splitlines()]
+        )
+        indented_custom_related_information = "\n".join(
+            [f"    {line}" for line in self.custom_rerank_info.splitlines()]
+        )
+        indented_default_answer_template = "\n".join(
+            [f"    {line}" for line in self.answer_prompt.splitlines()]
+        )
+        indented_keywords_extract_template = "\n".join(
+            [f"    {line}" for line in self.keywords_extract_prompt.splitlines()]
+        )
+        indented_doc_input_text = "\n".join(
+            [f"  {line}" for line in self.doc_input_text.splitlines()]
+        )
 
         # This can be extended to add storage fields according to the data needs to be stored
         yaml_content = f"""graph_schema: |
@@ -98,7 +110,10 @@ doc_input_text: |
 
     def generate_yaml_file(self):
         if os.path.exists(yaml_file_path):
-            log.info("%s already exists, do you want to override with the default configuration? (y/n)", yaml_file_path)
+            log.info(
+                "%s already exists, do you want to override with the default configuration? (y/n)",
+                yaml_file_path,
+            )
             update = input()
             if update.lower() != "y":
                 return

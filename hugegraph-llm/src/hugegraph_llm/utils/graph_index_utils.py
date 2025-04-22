@@ -36,7 +36,9 @@ from ..operators.kg_construction_task import KgBuilder
 def get_graph_index_info():
     builder = KgBuilder(LLMs().get_chat_llm(), Embeddings().get_embedding(), get_hg_client())
     graph_summary_info = builder.fetch_graph_data().run()
-    vector_index = VectorIndex.from_index_file(str(os.path.join(resource_path, huge_settings.graph_name, "graph_vids")))
+    vector_index = VectorIndex.from_index_file(
+        str(os.path.join(resource_path, huge_settings.graph_name, "graph_vids"))
+    )
     graph_summary_info["vid_index"] = {
         "embed_dim": vector_index.index.d,
         "num_vectors": vector_index.index.ntotal,
@@ -60,7 +62,7 @@ def clean_all_graph_data():
 
 def parse_schema(schema: str, builder: KgBuilder) -> Optional[str]:
     schema = schema.strip()
-    if schema.startswith('{'):
+    if schema.startswith("{"):
         try:
             schema = json.loads(schema)
             builder.import_schema(from_user_defined=schema)
@@ -92,12 +94,16 @@ def extract_graph(input_file, input_text, schema, example_prompt) -> str:
                 {
                     "vertices": context["vertices"],
                     "edges": context["edges"],
-                    "warning": "The schema may not match the Doc"
+                    "warning": "The schema may not match the Doc",
                 },
                 ensure_ascii=False,
-                indent=2
+                indent=2,
             )
-        return json.dumps({"vertices": context["vertices"], "edges": context["edges"]}, ensure_ascii=False, indent=2)
+        return json.dumps(
+            {"vertices": context["vertices"], "edges": context["edges"]},
+            ensure_ascii=False,
+            indent=2,
+        )
     except Exception as e:  # pylint: disable=broad-exception-caught
         log.error(e)
         raise gr.Error(str(e))

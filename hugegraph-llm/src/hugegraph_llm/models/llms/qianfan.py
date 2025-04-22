@@ -27,8 +27,12 @@ from hugegraph_llm.utils.log import log
 
 
 class QianfanClient(BaseLLM):
-    def __init__(self, model_name: Optional[str] = "ERNIE-4.0-Turbo-8K",
-                 api_key: Optional[str] = None, secret_key: Optional[str] = None):
+    def __init__(
+        self,
+        model_name: Optional[str] = "ERNIE-4.0-Turbo-8K",
+        api_key: Optional[str] = None,
+        secret_key: Optional[str] = None,
+    ):
         qianfan.get_config().AK = api_key or llm_settings.qianfan_chat_api_key
         qianfan.get_config().SK = secret_key or llm_settings.qianfan_chat_secret_key
         self.chat_model = model_name
@@ -36,9 +40,9 @@ class QianfanClient(BaseLLM):
 
     @retry(tries=3, delay=1)
     def generate(
-            self,
-            messages: Optional[List[Dict[str, Any]]] = None,
-            prompt: Optional[str] = None,
+        self,
+        messages: Optional[List[Dict[str, Any]]] = None,
+        prompt: Optional[str] = None,
     ) -> str:
         if messages is None:
             assert prompt is not None, "Messages or prompt must be provided."
@@ -54,9 +58,9 @@ class QianfanClient(BaseLLM):
 
     @retry(tries=3, delay=1)
     async def agenerate(
-            self,
-            messages: Optional[List[Dict[str, Any]]] = None,
-            prompt: Optional[str] = None,
+        self,
+        messages: Optional[List[Dict[str, Any]]] = None,
+        prompt: Optional[str] = None,
     ) -> str:
         if messages is None:
             assert prompt is not None, "Messages or prompt must be provided."
@@ -71,35 +75,37 @@ class QianfanClient(BaseLLM):
         return response.body["result"]
 
     def generate_streaming(
-            self,
-            messages: Optional[List[Dict[str, Any]]] = None,
-            prompt: Optional[str] = None,
-            on_token_callback: Optional[Callable] = None,
+        self,
+        messages: Optional[List[Dict[str, Any]]] = None,
+        prompt: Optional[str] = None,
+        on_token_callback: Optional[Callable] = None,
     ) -> Generator[str, None, None]:
         if messages is None:
             assert prompt is not None, "Messages or prompt must be provided."
             messages = [{"role": "user", "content": prompt}]
 
         for msg in self.chat_comp.do(messages=messages, model=self.chat_model, stream=True):
-            token = msg.body['result']
+            token = msg.body["result"]
             if on_token_callback:
                 on_token_callback(token)
             yield token
 
     async def agenerate_streaming(
-            self,
-            messages: Optional[List[Dict[str, Any]]] = None,
-            prompt: Optional[str] = None,
-            on_token_callback: Optional[Callable] = None,
+        self,
+        messages: Optional[List[Dict[str, Any]]] = None,
+        prompt: Optional[str] = None,
+        on_token_callback: Optional[Callable] = None,
     ) -> AsyncGenerator[str, None]:
         if messages is None:
             assert prompt is not None, "Messages or prompt must be provided."
             messages = [{"role": "user", "content": prompt}]
 
         try:
-            async_generator = await self.chat_comp.ado(messages=messages, model=self.chat_model, stream=True)
+            async_generator = await self.chat_comp.ado(
+                messages=messages, model=self.chat_model, stream=True
+            )
             async for msg in async_generator:
-                chunk = msg.body['result']
+                chunk = msg.body["result"]
                 if on_token_callback:
                     on_token_callback(chunk)
                 yield chunk
