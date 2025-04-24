@@ -28,8 +28,25 @@ from hugegraph_llm.models.embeddings.litellm import LiteLLMEmbedding
 from hugegraph_llm.models.llms.litellm import LiteLLMClient
 from hugegraph_llm.utils.log import log
 
-current_llm = "chat"
+def is_valid_url(url: str) -> bool:
+    from urllib.parse import urlparse
+    import ipaddress
 
+    allowed_domains = ["example.com", "aip.baidubce.com"]
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"}:
+            return False
+        if parsed.hostname in allowed_domains:
+            return True
+        ip = ipaddress.ip_address(parsed.hostname)
+        if ip.is_private:
+            return False
+    except ValueError:
+        return False
+    return False
+
+current_llm = "chat"
 
 def test_litellm_embedding(api_key, api_base, model_name) -> int:
     llm_client = LiteLLMEmbedding(
@@ -67,6 +84,12 @@ def test_api_connection(
 ) -> int:
     # TODO: use fastapi.request / starlette instead?
     log.debug("Request URL: %s", url)
+    if not is_valid_url(url):
+        msg = f"Invalid or unauthorized URL: {url}"
+        log.error(msg)
+        if origin_call is None:
+            raise gr.Error(msg)
+        return -1  # Error code
     try:
         if method.upper() == "GET":
             resp = requests.get(url, headers=headers, params=params, timeout=(1.0, 5.0), auth=auth)
@@ -137,7 +160,10 @@ def apply_embedding_config(arg1, arg2, arg3, origin_call=None) -> int:
         llm_settings.ollama_embedding_host = arg1
         llm_settings.ollama_embedding_port = int(arg2)
         llm_settings.ollama_embedding_model = arg3
-        status_code = test_api_connection(f"http://{arg1}:{arg2}", origin_call=origin_call)
+        test_url = f"http://{arg1}:{arg2}"
+        if not is_valid_url(test_url):
+            raise gr.Error(f"Invalid or unauthorized URL: {test_url}")
+        status_code = test_api_connection(test_url, origin_call=origin_call)
     elif embedding_option == "litellm":
         llm_settings.litellm_embedding_api_key = arg1
         llm_settings.litellm_embedding_api_base = arg2
