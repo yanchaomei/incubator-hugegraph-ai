@@ -32,6 +32,7 @@ from hugegraph_llm.api.models.rag_response import RAGResponse
 from hugegraph_llm.config import llm_settings, prompt
 from hugegraph_llm.utils.log import log
 
+
 # pylint: disable=too-many-statements
 def rag_http_api(
     router: APIRouter,
@@ -71,7 +72,9 @@ def rag_http_api(
             "query": req.query,
             **{
                 key: value
-                for key, value in zip(["raw_answer", "vector_only", "graph_only", "graph_vector_answer"], result)
+                for key, value in zip(
+                    ["raw_answer", "vector_only", "graph_only", "graph_vector_answer"], result
+                )
                 if getattr(req, key)
             },
         }
@@ -101,11 +104,12 @@ def rag_http_api(
                 near_neighbor_first=req.near_neighbor_first,
                 custom_related_information=req.custom_priority_info,
                 gremlin_prompt=req.gremlin_prompt or prompt.gremlin_generate_prompt,
-                get_vertex_only=req.get_vertex_only
+                get_vertex_only=req.get_vertex_only,
             )
 
             if req.get_vertex_only:
                 from hugegraph_llm.operators.hugegraph_op.graph_rag_query import GraphRAGQuery
+
                 graph_rag = GraphRAGQuery()
                 graph_rag.init_client(result)
                 vertex_details = graph_rag.get_vertex_details(result["match_vids"])
@@ -134,13 +138,16 @@ def rag_http_api(
         except Exception as e:
             log.error("Unexpected error occurred: %s", e)
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred."
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An unexpected error occurred.",
             ) from e
 
     @router.post("/config/graph", status_code=status.HTTP_201_CREATED)
     def graph_config_api(req: GraphConfigRequest):
         # Accept status code
-        res = apply_graph_conf(req.ip, req.port, req.name, req.user, req.pwd, req.gs, origin_call="http")
+        res = apply_graph_conf(
+            req.ip, req.port, req.name, req.user, req.pwd, req.gs, origin_call="http"
+        )
         return generate_response(RAGResponse(status_code=res, message="Missing Value"))
 
     # TODO: restructure the implement of llm to three types, like "/config/chat_llm"
@@ -149,9 +156,13 @@ def rag_http_api(
         llm_settings.llm_type = req.llm_type
 
         if req.llm_type == "openai":
-            res = apply_llm_conf(req.api_key, req.api_base, req.language_model, req.max_tokens, origin_call="http")
+            res = apply_llm_conf(
+                req.api_key, req.api_base, req.language_model, req.max_tokens, origin_call="http"
+            )
         elif req.llm_type == "qianfan_wenxin":
-            res = apply_llm_conf(req.api_key, req.secret_key, req.language_model, None, origin_call="http")
+            res = apply_llm_conf(
+                req.api_key, req.secret_key, req.language_model, None, origin_call="http"
+            )
         else:
             res = apply_llm_conf(req.host, req.port, req.language_model, None, origin_call="http")
         return generate_response(RAGResponse(status_code=res, message="Missing Value"))
@@ -161,7 +172,9 @@ def rag_http_api(
         llm_settings.embedding_type = req.llm_type
 
         if req.llm_type == "openai":
-            res = apply_embedding_conf(req.api_key, req.api_base, req.language_model, origin_call="http")
+            res = apply_embedding_conf(
+                req.api_key, req.api_base, req.language_model, origin_call="http"
+            )
         elif req.llm_type == "qianfan_wenxin":
             res = apply_embedding_conf(req.api_key, req.api_base, None, origin_call="http")
         else:
@@ -173,7 +186,9 @@ def rag_http_api(
         llm_settings.reranker_type = req.reranker_type
 
         if req.reranker_type == "cohere":
-            res = apply_reranker_conf(req.api_key, req.reranker_model, req.cohere_base_url, origin_call="http")
+            res = apply_reranker_conf(
+                req.api_key, req.reranker_model, req.cohere_base_url, origin_call="http"
+            )
         elif req.reranker_type == "siliconflow":
             res = apply_reranker_conf(req.api_key, req.reranker_model, None, origin_call="http")
         else:

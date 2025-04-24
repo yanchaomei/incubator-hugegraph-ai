@@ -31,9 +31,9 @@ class SimilarityMode(str, Enum):
 
 
 def similarity(
-        embedding1: Union[List[float], np.ndarray],
-        embedding2: Union[List[float], np.ndarray],
-        mode: SimilarityMode = SimilarityMode.DEFAULT,
+    embedding1: Union[List[float], np.ndarray],
+    embedding2: Union[List[float], np.ndarray],
+    mode: SimilarityMode = SimilarityMode.DEFAULT,
 ) -> float:
     """Get embedding similarity."""
     if isinstance(embedding1, list):
@@ -54,24 +54,18 @@ class BaseEmbedding(ABC):
     """Embedding wrapper should take in a text and return a vector."""
 
     @abstractmethod
-    def get_text_embedding(
-            self,
-            text: str
-    ) -> List[float]:
+    def get_text_embedding(self, text: str) -> List[float]:
         """Comment"""
 
     @abstractmethod
-    async def async_get_text_embedding(
-            self,
-            text: str
-    ) -> List[float]:
+    async def async_get_text_embedding(self, text: str) -> List[float]:
         """Comment"""
 
     @staticmethod
     def similarity(
-            embedding1: Union[List[float], np.ndarray],
-            embedding2: Union[List[float], np.ndarray],
-            mode: SimilarityMode = SimilarityMode.DEFAULT,
+        embedding1: Union[List[float], np.ndarray],
+        embedding2: Union[List[float], np.ndarray],
+        mode: SimilarityMode = SimilarityMode.DEFAULT,
     ) -> float:
         """Get embedding similarity."""
         if isinstance(embedding1, list):

@@ -31,12 +31,15 @@ class BaseConfig(BaseSettings):
     class Config:
         env_file = env_path
         case_sensitive = False
-        extra = 'ignore' # ignore extra fields to avoid ValidationError
+        extra = "ignore"  # ignore extra fields to avoid ValidationError
         env_ignore_empty = True
 
     def generate_env(self):
         if os.path.exists(env_path):
-            log.info("%s already exists, do you want to override with the default configuration? (y/n)", env_path)
+            log.info(
+                "%s already exists, do you want to override with the default configuration? (y/n)",
+                env_path,
+            )
             update = input()
             if update.lower() != "y":
                 return

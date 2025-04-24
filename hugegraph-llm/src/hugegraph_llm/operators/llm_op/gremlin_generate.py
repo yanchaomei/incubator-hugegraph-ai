@@ -52,7 +52,8 @@ class GremlinGenerateSynthesize:
         example_strings = []
         for example in examples:
             example_strings.append(
-                f"- query: {example['query']}\n" f"- gremlin:\n```gremlin\n{example['gremlin']}\n```"
+                f"- query: {example['query']}\n"
+                f"- gremlin:\n```gremlin\n{example['gremlin']}\n```"
             )
         return "\n\n".join(example_strings)
 
@@ -80,11 +81,17 @@ class GremlinGenerateSynthesize:
             example=self._format_examples(examples=examples),
             vertices=self._format_vertices(vertices=self.vertices),
         )
-        async_tasks["initialized_answer"] = asyncio.create_task(self.llm.agenerate(prompt=init_prompt))
+        async_tasks["initialized_answer"] = asyncio.create_task(
+            self.llm.agenerate(prompt=init_prompt)
+        )
 
         raw_response = await async_tasks["raw_answer"]
         initialized_response = await async_tasks["initialized_answer"]
-        log.debug("Text2Gremlin with tmpl prompt:\n %s,\n LLM Response: %s", init_prompt, initialized_response)
+        log.debug(
+            "Text2Gremlin with tmpl prompt:\n %s,\n LLM Response: %s",
+            init_prompt,
+            initialized_response,
+        )
 
         context["result"] = self._extract_response(response=initialized_response)
         context["raw_result"] = self._extract_response(response=raw_response)
@@ -112,7 +119,11 @@ class GremlinGenerateSynthesize:
         )
         initialized_response = self.llm.generate(prompt=init_prompt)
 
-        log.debug("Text2Gremlin with tmpl prompt:\n %s,\n LLM Response: %s", init_prompt, initialized_response)
+        log.debug(
+            "Text2Gremlin with tmpl prompt:\n %s,\n LLM Response: %s",
+            init_prompt,
+            initialized_response,
+        )
 
         context["result"] = self._extract_response(response=initialized_response)
         context["raw_result"] = self._extract_response(response=raw_response)

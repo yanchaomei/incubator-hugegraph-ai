@@ -23,12 +23,12 @@ from openai import OpenAI, AsyncOpenAI
 
 class OpenAIEmbedding:
     def __init__(
-            self,
-            model_name: str = "text-embedding-3-small",
-            api_key: Optional[str] = None,
-            api_base: Optional[str] = None
+        self,
+        model_name: str = "text-embedding-3-small",
+        api_key: Optional[str] = None,
+        api_base: Optional[str] = None,
     ):
-        api_key = api_key or ''
+        api_key = api_key or ""
         self.client = OpenAI(api_key=api_key, base_url=api_base)
         self.aclient = AsyncOpenAI(api_key=api_key, base_url=api_base)
         self.embedding_model_name = model_name

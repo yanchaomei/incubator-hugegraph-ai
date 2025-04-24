@@ -61,20 +61,18 @@ def filter_item(schema, items) -> List[Dict[str, Any]]:
         properties_map["vertex"][vertex["name"]] = {
             "primary_keys": vertex["primary_keys"],
             "nullable_keys": vertex["nullable_keys"],
-            "properties": vertex["properties"]
+            "properties": vertex["properties"],
         }
     for edge in schema["edgelabels"]:
-        properties_map["edge"][edge["name"]] = {
-            "properties": edge["properties"]
-        }
+        properties_map["edge"][edge["name"]] = {"properties": edge["properties"]}
     log.info("properties_map: %s", properties_map)
     for item in items:
         item_type = item["type"]
         if item_type == "vertex":
             label = item["label"]
-            non_nullable_keys = (
-                set(properties_map[item_type][label]["properties"])
-                .difference(set(properties_map[item_type][label]["nullable_keys"])))
+            non_nullable_keys = set(properties_map[item_type][label]["properties"]).difference(
+                set(properties_map[item_type][label]["nullable_keys"])
+            )
             for key in non_nullable_keys:
                 if key not in item["properties"]:
                     item["properties"][key] = "NULL"
@@ -87,11 +85,7 @@ def filter_item(schema, items) -> List[Dict[str, Any]]:
 
 
 class PropertyGraphExtract:
-    def __init__(
-            self,
-            llm: BaseLLM,
-            example_prompt: str = prompt.extract_graph_prompt
-    ) -> None:
+    def __init__(self, llm: BaseLLM, example_prompt: str = prompt.extract_graph_prompt) -> None:
         self.llm = llm
         self.example_prompt = example_prompt
         self.NECESSARY_ITEM_KEYS = {"label", "type", "properties"}  # pylint: disable=invalid-name
@@ -106,7 +100,9 @@ class PropertyGraphExtract:
         items = []
         for chunk in chunks:
             proceeded_chunk = self.extract_property_graph_by_llm(schema, chunk)
-            log.debug("[LLM] %s input: %s \n output:%s", self.__class__.__name__, chunk, proceeded_chunk)
+            log.debug(
+                "[LLM] %s input: %s \n output:%s", self.__class__.__name__, chunk, proceeded_chunk
+            )
             items.extend(self._extract_and_filter_label(schema, proceeded_chunk))
         items = filter_item(schema, items)
         for item in items:
@@ -126,10 +122,10 @@ class PropertyGraphExtract:
 
     def _extract_and_filter_label(self, schema, text) -> List[Dict[str, Any]]:
         # analyze llm generated text to JSON
-        json_strings = re.findall(r'(\[.*?])', text, re.DOTALL)
-        longest_json = max(json_strings, key=lambda x: len(''.join(x)), default=('', ''))
+        json_strings = re.findall(r"(\[.*?])", text, re.DOTALL)
+        longest_json = max(json_strings, key=lambda x: len("".join(x)), default=("", ""))
 
-        longest_json_str = ''.join(longest_json).strip()
+        longest_json_str = "".join(longest_json).strip()
 
         items = []
         try:
@@ -144,9 +140,13 @@ class PropertyGraphExtract:
                     log.warning("Invalid item keys '%s'.", item.keys())
                     continue
                 if item["type"] == "vertex" or item["type"] == "edge":
-                    if (item["label"] not in vertex_label_set
-                            and item["label"] not in edge_label_set):
-                        log.warning("Invalid '%s' label '%s' has been ignored.", item["type"], item["label"])
+                    if (
+                        item["label"] not in vertex_label_set
+                        and item["label"] not in edge_label_set
+                    ):
+                        log.warning(
+                            "Invalid '%s' label '%s' has been ignored.", item["type"], item["label"]
+                        )
                     else:
                         items.append(item)
                 else:

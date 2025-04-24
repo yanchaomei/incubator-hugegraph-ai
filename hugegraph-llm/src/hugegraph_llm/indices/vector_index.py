@@ -86,7 +86,9 @@ class VectorIndex:
         self.properties = [p for i, p in enumerate(self.properties) if i not in indices]
         return remove_num
 
-    def search(self, query_vector: List[float], top_k: int, dis_threshold: float = 0.9) -> List[Any]:
+    def search(
+        self, query_vector: List[float], top_k: int, dis_threshold: float = 0.9
+    ) -> List[Any]:
         if self.index.ntotal == 0:
             return []
 
@@ -100,7 +102,9 @@ class VectorIndex:
                 results.append(deepcopy(self.properties[i]))
                 log.debug("[✓] Add valid distance %s to results.", dist)
             else:
-                log.debug("[x] Distance %s >= threshold %s, ignore this result.", dist, dis_threshold)
+                log.debug(
+                    "[x] Distance %s >= threshold %s, ignore this result.", dist, dis_threshold
+                )
         return results
 
     @staticmethod

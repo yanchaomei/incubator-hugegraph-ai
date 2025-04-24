@@ -43,7 +43,9 @@ class Commit2Graph:
         edges = data.get("edges", [])
 
         if not vertices and not edges:
-            log.critical("(Loading) Both vertices and edges are empty. Please check the input data again.")
+            log.critical(
+                "(Loading) Both vertices and edges are empty. Please check the input data again."
+            )
             raise ValueError("Both vertices and edges input are empty.")
 
         if not schema:
@@ -87,7 +89,9 @@ class Commit2Graph:
             input_label = vertex["label"]
             # 1. ensure the input_label in the graph schema
             if input_label not in vertex_label_map:
-                log.critical("(Input) VertexLabel %s not found in schema, skip & need check it!", input_label)
+                log.critical(
+                    "(Input) VertexLabel %s not found in schema, skip & need check it!", input_label
+                )
                 continue
 
             input_properties = vertex["properties"]
@@ -101,7 +105,11 @@ class Commit2Graph:
             for pk in primary_keys:
                 if not input_properties.get(pk):
                     if len(primary_keys) == 1:
-                        log.error("Primary-key '%s' missing in vertex %s, skip it & need check it again", pk, vertex)
+                        log.error(
+                            "Primary-key '%s' missing in vertex %s, skip it & need check it again",
+                            pk,
+                            vertex,
+                        )
                         has_problem = True
                         break
                     # TODO: transform to Enum first (better in earlier step)
@@ -111,7 +119,11 @@ class Commit2Graph:
                         input_properties[pk] = default_value_map(data_type)
                     else:
                         input_properties[pk] = []
-                    log.warning("Primary-key '%s' missing in vertex %s, mark empty & need check it again!", pk, vertex)
+                    log.warning(
+                        "Primary-key '%s' missing in vertex %s, mark empty & need check it again!",
+                        pk,
+                        vertex,
+                    )
             if has_problem:
                 continue
 
@@ -126,14 +138,19 @@ class Commit2Graph:
                 data_type = property_label_map[key]["data_type"]
                 cardinality = property_label_map[key]["cardinality"]
                 if not self._check_property_data_type(data_type, cardinality, value):
-                    log.error("Property type/format '%s' is not correct, skip it & need check it again", key)
+                    log.error(
+                        "Property type/format '%s' is not correct, skip it & need check it again",
+                        key,
+                    )
                     has_problem = True
                     break
             if has_problem:
                 continue
 
             # TODO: we could try batch add vertices first, setback to single-mode if failed
-            vid = self._handle_graph_creation(self.client.graph().addVertex, input_label, input_properties).id
+            vid = self._handle_graph_creation(
+                self.client.graph().addVertex, input_label, input_properties
+            ).id
             vertex["id"] = vid
 
         for edge in edges:
@@ -143,7 +160,9 @@ class Commit2Graph:
             properties = edge["properties"]
 
             if label not in edge_label_map:
-                log.critical("(Input) EdgeLabel %s not found in schema, skip & need check it!", label)
+                log.critical(
+                    "(Input) EdgeLabel %s not found in schema, skip & need check it!", label
+                )
                 continue
 
             # TODO: we could try batch add edges first, setback to single-mode if failed
@@ -177,13 +196,19 @@ class Commit2Graph:
 
     def schema_free_mode(self, data):
         self.schema.propertyKey("name").asText().ifNotExist().create()
-        self.schema.vertexLabel("vertex").useCustomizeStringId().properties("name").ifNotExist().create()
+        self.schema.vertexLabel("vertex").useCustomizeStringId().properties(
+            "name"
+        ).ifNotExist().create()
         self.schema.edgeLabel("edge").sourceLabel("vertex").targetLabel("vertex").properties(
             "name"
         ).ifNotExist().create()
 
-        self.schema.indexLabel("vertexByName").onV("vertex").by("name").secondary().ifNotExist().create()
-        self.schema.indexLabel("edgeByName").onE("edge").by("name").secondary().ifNotExist().create()
+        self.schema.indexLabel("vertexByName").onV("vertex").by(
+            "name"
+        ).secondary().ifNotExist().create()
+        self.schema.indexLabel("edgeByName").onE("edge").by(
+            "name"
+        ).secondary().ifNotExist().create()
 
         for item in data:
             s, p, o = (element.strip() for element in item)
@@ -197,8 +222,12 @@ class Commit2Graph:
             data_type = PropertyDataType(prop["data_type"])
             cardinality = PropertyCardinality(prop["cardinality"])
         except ValueError:
-            log.critical("Invalid data type %s / cardinality %s for property %s, skip & should check it again",
-                         prop["data_type"], prop["cardinality"], name)
+            log.critical(
+                "Invalid data type %s / cardinality %s for property %s, skip & should check it again",
+                prop["data_type"],
+                prop["cardinality"],
+                name,
+            )
             return
 
         property_key = self.schema.propertyKey(name)
@@ -260,14 +289,19 @@ class Commit2Graph:
     def _check_single_data_type(self, data_type: str, value) -> bool:
         if data_type == PropertyDataType.BOOLEAN.value:
             return isinstance(value, bool)
-        if data_type in (PropertyDataType.BYTE.value, PropertyDataType.INT.value, PropertyDataType.LONG.value):
+        if data_type in (
+            PropertyDataType.BYTE.value,
+            PropertyDataType.INT.value,
+            PropertyDataType.LONG.value,
+        ):
             return isinstance(value, int)
         if data_type in (PropertyDataType.FLOAT.value, PropertyDataType.DOUBLE.value):
             return isinstance(value, float)
         if data_type in (PropertyDataType.TEXT.value, PropertyDataType.UUID.value):
             return isinstance(value, str)
         # TODO: check ok below
-        if data_type == PropertyDataType.DATE.value: # the format should be "yyyy-MM-dd"
+        if data_type == PropertyDataType.DATE.value:  # the format should be "yyyy-MM-dd"
             import re
-            return isinstance(value, str) and re.match(r'^\d{4}-\d{2}-\d{2}$', value)
+
+            return isinstance(value, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", value)
         raise ValueError(f"Unknown/Unsupported data type: {data_type}")

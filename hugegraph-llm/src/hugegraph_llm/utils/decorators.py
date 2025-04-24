@@ -74,6 +74,7 @@ def log_operator_time(func: Callable) -> Callable:
             log.debug("Operator %s finished in %.2f seconds", operator.__class__.__name__, op_time)
             # log.debug("Current context:\n%s", result)
         return result
+
     return wrapper
 
 
@@ -89,11 +90,14 @@ def record_qps(func: Callable) -> Callable:
         else:
             log.debug("%s QPS: %f/s", args[0].__class__.__name__, qps)
         return result
+
     return wrapper
+
 
 def with_task_id(func: Callable) -> Callable:
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         import uuid
+
         task_id = f"task_{str(uuid.uuid4())[:8]}"
         log.debug("New task created with id: %s", task_id)
 
@@ -106,4 +110,5 @@ def with_task_id(func: Callable) -> Callable:
             setattr(result, "task_id", task_id)
 
         return result
+
     return wrapper

@@ -67,7 +67,9 @@ def build_example_vector_index(temp_file) -> dict:
 def gremlin_generate(
     inp, example_num, schema, gremlin_prompt
 ) -> Union[tuple[str, str], tuple[str, Any, Any, Any, Any]]:
-    generator = GremlinGenerator(llm=LLMs().get_text2gql_llm(), embedding=Embeddings().get_embedding())
+    generator = GremlinGenerator(
+        llm=LLMs().get_text2gql_llm(), embedding=Embeddings().get_embedding()
+    )
     sm = SchemaManager(graph_name=schema)
     short_schema = False
 
@@ -103,7 +105,9 @@ def gremlin_generate(
     except Exception as e:  # pylint: disable=broad-except
         context["raw_exec_res"] = f"{e}"
 
-    match_result = json.dumps(context.get("match_result", "No Results"), ensure_ascii=False, indent=2)
+    match_result = json.dumps(
+        context.get("match_result", "No Results"), ensure_ascii=False, indent=2
+    )
     return (
         match_result,
         context["result"],
@@ -127,7 +131,11 @@ def simple_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
     if "edgelabels" in schema:
         mini_schema["edgelabels"] = []
         for edge in schema["edgelabels"]:
-            new_edge = {key: edge[key] for key in ["name", "source_label", "target_label", "properties"] if key in edge}
+            new_edge = {
+                key: edge[key]
+                for key in ["name", "source_label", "target_label", "properties"]
+                if key in edge
+            }
             mini_schema["edgelabels"].append(new_edge)
 
     return mini_schema
@@ -144,7 +152,8 @@ def create_text2gremlin_block() -> Tuple:
     )
     with gr.Row():
         file = gr.File(
-            value=os.path.join(resource_path, "demo", "text2gremlin.csv"), label="Upload Text-Gremlin Pairs File"
+            value=os.path.join(resource_path, "demo", "text2gremlin.csv"),
+            label="Upload Text-Gremlin Pairs File",
         )
         out = gr.Textbox(label="Result Message")
     with gr.Row():
@@ -154,22 +163,39 @@ def create_text2gremlin_block() -> Tuple:
 
     with gr.Row():
         with gr.Column(scale=1):
-            input_box = gr.Textbox(value=prompt.default_question, label="Nature Language Query", show_copy_button=True)
-            match = gr.Code(label="Similar Template (TopN)", language="javascript", elem_classes="code-container-show")
+            input_box = gr.Textbox(
+                value=prompt.default_question, label="Nature Language Query", show_copy_button=True
+            )
+            match = gr.Code(
+                label="Similar Template (TopN)",
+                language="javascript",
+                elem_classes="code-container-show",
+            )
             initialized_out = gr.Textbox(label="Gremlin With Template", show_copy_button=True)
             raw_out = gr.Textbox(label="Gremlin Without Template", show_copy_button=True)
             tmpl_exec_out = gr.Code(
-                label="Query With Template Output", language="json", elem_classes="code-container-show"
+                label="Query With Template Output",
+                language="json",
+                elem_classes="code-container-show",
             )
             raw_exec_out = gr.Code(
-                label="Query Without Template Output", language="json", elem_classes="code-container-show"
+                label="Query Without Template Output",
+                language="json",
+                elem_classes="code-container-show",
             )
 
         with gr.Column(scale=1):
-            example_num_slider = gr.Slider(minimum=0, maximum=10, step=1, value=2, label="Number of refer examples")
-            schema_box = gr.Textbox(value=prompt.text2gql_graph_schema, label="Schema", lines=2, show_copy_button=True)
+            example_num_slider = gr.Slider(
+                minimum=0, maximum=10, step=1, value=2, label="Number of refer examples"
+            )
+            schema_box = gr.Textbox(
+                value=prompt.text2gql_graph_schema, label="Schema", lines=2, show_copy_button=True
+            )
             prompt_box = gr.Textbox(
-                value=prompt.gremlin_generate_prompt, label="Prompt", lines=20, show_copy_button=True
+                value=prompt.gremlin_generate_prompt,
+                label="Prompt",
+                lines=20,
+                show_copy_button=True,
             )
             btn = gr.Button("Text2Gremlin", variant="primary")
     btn.click(  # pylint: disable=no-member
@@ -197,9 +223,9 @@ def graph_rag_recall(
     store_schema(prompt.text2gql_graph_schema, query, gremlin_prompt)
     rag = RAGPipeline()
     rag.extract_keywords().keywords_to_vid(
-            vector_dis_threshold=vector_dis_threshold,
-            topk_per_keyword=topk_per_keyword,
-        )
+        vector_dis_threshold=vector_dis_threshold,
+        topk_per_keyword=topk_per_keyword,
+    )
 
     if not get_vertex_only:
         rag.import_schema(huge_settings.graph_name).query_graphdb(

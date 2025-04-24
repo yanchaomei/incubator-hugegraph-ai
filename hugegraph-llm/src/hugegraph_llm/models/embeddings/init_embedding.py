@@ -32,25 +32,25 @@ class Embeddings:
             return OpenAIEmbedding(
                 model_name=llm_settings.openai_embedding_model,
                 api_key=llm_settings.openai_embedding_api_key,
-                api_base=llm_settings.openai_embedding_api_base
+                api_base=llm_settings.openai_embedding_api_base,
             )
         if self.embedding_type == "ollama/local":
             return OllamaEmbedding(
                 model=llm_settings.ollama_embedding_model,
                 host=llm_settings.ollama_embedding_host,
-                port=llm_settings.ollama_embedding_port
+                port=llm_settings.ollama_embedding_port,
             )
         if self.embedding_type == "qianfan_wenxin":
             return QianFanEmbedding(
                 model_name=llm_settings.qianfan_embedding_model,
                 api_key=llm_settings.qianfan_embedding_api_key,
-                secret_key=llm_settings.qianfan_embedding_secret_key
+                secret_key=llm_settings.qianfan_embedding_secret_key,
             )
         if self.embedding_type == "litellm":
             return LiteLLMEmbedding(
                 model_name=llm_settings.litellm_embedding_model,
                 api_key=llm_settings.litellm_embedding_api_key,
-                api_base=llm_settings.litellm_embedding_api_base
+                api_base=llm_settings.litellm_embedding_api_base,
             )
 
         raise Exception("embedding type is not supported !")
